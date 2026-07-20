@@ -1,0 +1,16 @@
+.git
+.gitignore
+.cursor
+.idea
+.DS_Store
+**/.env
+**/.env.*
+**/node_modules
+**/dist
+**/coverage
+**/*.log
+**/*.sqlite
+**/*.sqlite-shm
+**/*.sqlite-wal
+**/*.tsbuildinfo
+data

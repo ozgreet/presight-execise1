@@ -1,0 +1,56 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    environment:
+      DATABASE_PATH: /app/data/presight.sqlite
+      NODE_ENV: production
+      PORT: 3000
+    init: true
+    restart: unless-stopped
+    volumes:
+      - sqlite-data:/app/data
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3000/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+
+  client:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+      args:
+        VITE_API_URL: ''
+    depends_on:
+      server:
+        condition: service_healthy
+    init: true
+    restart: unless-stopped
+    ports:
+      - '${APP_PORT:-8080}:80'
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'wget',
+          '--no-verbose',
+          '--tries=1',
+          '--spider',
+          'http://127.0.0.1/api/health',
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+volumes:
+  sqlite-data:
