@@ -1,40 +1,17 @@
 {
-  "name": "presight-exercise",
+  "name": "presight-execise",
   "version": "1.0.0",
-  "private": true,
-  "type": "module",
+  "repository": "",
+  "author": "",
   "license": "MIT",
-  "packageManager": "yarn@1.22.22",
-  "engines": {
-    "node": ">=20"
-  },
   "workspaces": [
     "client",
     "server"
   ],
   "scripts": {
-    "setup": "yarn install --frozen-lockfile",
-    "dev": "lerna run dev --parallel --stream",
-    "start": "yarn workspace @presight/server start",
-    "build": "lerna run build",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "lint": "lerna run lint",
-    "typecheck": "lerna run typecheck",
-    "test": "lerna run test",
-    "db:migrate": "yarn workspace @presight/server db:migrate",
-    "seed": "yarn workspace @presight/server seed"
+    "start": "lerna run start"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "eslint": "^10.7.0",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-refresh": "^0.5.3",
-    "globals": "^17.7.0",
-    "lerna": "^9.0.7",
-    "prettier": "^3.9.5",
-    "typescript": "^6.0.0",
-    "typescript-eslint": "^8.64.0"
+    "lerna": "~8.2.1"
   }
 }

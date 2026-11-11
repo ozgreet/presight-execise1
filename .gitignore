@@ -29,13 +29,3 @@ yarn-error.log*
 
 .parcel-cache
 .idea/
-*.tsbuildinfo
-*.sqlite
-*.sqlite-shm
-*.sqlite-wal
-data/
-client/.env
-server/.env
-!.env.example
-!client/.env.example
-!server/.env.example

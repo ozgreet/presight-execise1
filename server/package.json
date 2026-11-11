@@ -1,33 +1,13 @@
 {
-  "name": "@presight/server",
+  "name": "presight-server",
   "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "main": "dist/index.js",
+  "main": "index.js",
   "license": "MIT",
-  "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "start": "node dist/index.js",
-    "build": "tsc -b",
-    "lint": "eslint .",
-    "typecheck": "tsc -b --pretty false",
-    "test": "vitest run",
-    "db:migrate": "tsx src/db/migrate.ts",
-    "seed": "tsx src/db/seed.ts"
-  },
   "dependencies": {
-    "better-sqlite3": "^12.11.1",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "zod": "^4.4.3"
+    "express": "~5.1.0"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.13",
-    "@types/express": "^5.0.6",
-    "@types/node": "^26.1.1",
-    "@types/supertest": "^7.2.1",
-    "supertest": "^7.2.2",
-    "tsx": "^4.23.1",
-    "vitest": "^4.1.10"
+    "@types/express": "~5.0.1",
+    "@types/node-fetch": "~2.6.12"
   }
 }

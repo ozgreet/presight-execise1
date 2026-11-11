@@ -1,56 +1,56 @@
 services:
-  server:
-    build:
-      context: .
-      dockerfile: server/Dockerfile
-    environment:
-      DATABASE_PATH: /app/data/presight.sqlite
-      NODE_ENV: production
-      PORT: 3000
-    init: true
+  postgres:
+    image: postgres:16-alpine
+    container_name: presight-postgres
     restart: unless-stopped
+    environment:
+      POSTGRES_USER: presight
+      POSTGRES_PASSWORD: presight
+      POSTGRES_DB: presight
+    ports:
+      # Host 15432 → container 5432 (avoids clashing with a local Postgres)
+      - "15432:5432"
     volumes:
-      - sqlite-data:/app/data
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test:
-        [
-          'CMD',
-          'node',
-          '-e',
-          "fetch('http://127.0.0.1:3000/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))",
-        ]
+      test: ["CMD-SHELL", "pg_isready -U presight -d presight"]
       interval: 5s
-      timeout: 3s
+      timeout: 5s
       retries: 10
-      start_period: 20s
+
+  api:
+    build:
+      context: ./presight-assignment-server
+    container_name: presight-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PORT: 3001
+      NODE_ENV: production
+      DATABASE_URL: postgres://presight:presight@postgres:5432/presight
+      DATABASE_SSL: "false"
+      CORS_ORIGIN: http://localhost:18080,http://localhost:5173
+      API_DELAY_MS: 700
+      SEED_USER_COUNT: 5000
+      SEED_FORCE: "false"
+    ports:
+      # Host 13001 → container 3001
+      - "13001:3001"
 
   client:
     build:
-      context: .
-      dockerfile: client/Dockerfile
+      context: ./presight-assignment-client
       args:
-        VITE_API_URL: ''
-    depends_on:
-      server:
-        condition: service_healthy
-    init: true
+        VITE_API_BASE_URL: ""
+    container_name: presight-client
     restart: unless-stopped
+    depends_on:
+      - api
     ports:
-      - '${APP_PORT:-8080}:80'
-    healthcheck:
-      test:
-        [
-          'CMD',
-          'wget',
-          '--no-verbose',
-          '--tries=1',
-          '--spider',
-          'http://127.0.0.1/api/health',
-        ]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-      start_period: 5s
+      # Host 18080 → container 80 (avoids clashing with common 8080 apps)
+      - "18080:80"
 
 volumes:
-  sqlite-data:
+  postgres_data:
