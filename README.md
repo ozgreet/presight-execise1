@@ -1,3 +1,83 @@
+<h1 align="center">User Directory</h1>
+
+# Setup & local development
+
+How to run this User Directory implementation locally.
+
+> **Database:** **PostgreSQL** is used instead of SQLite (same schema ideas, Docker-friendly).  
+> The original assignment brief is below.
+
+## Quick start
+
+Requires **Docker** and **Make**.
+
+```bash
+git clone https://github.com/23solo/presight-execise.git
+cd presight-execise
+make up
+```
+
+That builds and starts **Postgres**, the **API**, and the **client** as containers. The API container runs migrations and seeds on startup.
+
+| Service | URL |
+|---------|-----|
+| Client | http://localhost:18080 |
+| API | http://localhost:13001 |
+| Postgres | `localhost:15432` (user/pass/db: `presight`) |
+
+```bash
+make logs    # follow logs
+make down    # stop containers (keeps DB volume)
+```
+
+### Make targets
+
+| Command | What it does |
+|---------|----------------|
+| `make up` | Build & start postgres + api + client |
+| `make down` | Stop containers (keeps Postgres data) |
+| `make logs` | Follow container logs |
+| `make build` | Build images only |
+| `make help` | List targets |
+
+## Manual Docker commands
+
+Same as `make up`, without Make. Run from the repo root (`presight-execise/`):
+
+```bash
+docker compose up --build -d
+docker compose logs -f
+docker compose down
+```
+
+Postgres data is stored in the Docker volume `postgres_data`, so `docker compose down` keeps your DB. To wipe data as well:
+
+```bash
+docker compose down -v
+```
+
+## Database seeding
+
+Seeding runs automatically inside the API container on start (`docker-entrypoint.sh`), via `presight-assignment-server/src/db/seed.ts`. It skips if users already exist.
+
+Defaults (compose env):
+
+- `SEED_USER_COUNT=5000`
+- `SEED_FORCE=false` (set `true` and recreate the API container to wipe + reseed)
+
+Schema lives in `presight-assignment-server/migrations/` (`users`, `hobbies`, `user_hobbies`).
+
+## API overview
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `GET` | `/api/users` | Paginated, filtered, sorted users |
+| `GET` | `/api/facets` | Top 20 hobbies & nationalities for current filters |
+| `GET` | `/api/insights` | Extra directory insights |
+| `GET` | `/healthz` | Health check |
+
+---
+
 # Presight Frontend Exercise
 
 Build a small full-stack user directory application. The goal is to evaluate how you design a searchable, filterable, paginated UI backed by persisted data and clear API boundaries.
